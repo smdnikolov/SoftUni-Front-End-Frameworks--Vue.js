@@ -10,7 +10,7 @@
       <h1 style="color:#f5860a;text-align:center">Loading...</h1>
     </div>
     <div v-else>
-      <div class="msg" v-if="!user">
+      <div class="msg" v-if="!user && memes.length>0">
         You should
         <router-link to="/login">Login&nbsp;</router-link>to comment or vote.
       </div>
@@ -51,6 +51,12 @@
           <div class="line"></div>
         </div>
       </div>
+      <div v-else-if="memes.length===0" class="col-sm-4 center" style="text-align:center">
+        <p style="font-size:35px;color=gray">
+          There are no memes yet, be the first to
+          <router-link to="/share" style="font-size:35px">share&nbsp;</router-link>
+        </p>
+      </div>
       <div v-else class="col-sm-4 center" style="text-align:center">
         <p style="font-size:35px;color=gray">
           There are no memes yet, be the first to
@@ -76,25 +82,31 @@ export default {
       axios
         .get("https://memes-587f6.firebaseio.com/memes/.json")
         .then(data => {
-          data = Object.entries(Object.values(data)[0]);
-          data.forEach(element => {
-            if (element[1].upvotes < 11)
-              this.memes.push({
-                id: element[0],
-                category: element[1].category,
-                imageURL: element[1].imageURL,
-                title: element[1].title,
-                upvotes: element[1].upvotes,
-                catSrc: element[1].catSrc,
-                link: element[1].catLink,
-                voted: element[1].voted,
-                comments: element[1].comments
+          if (data.data) {
+            data = Object.entries(Object.values(data)[0]);
+            data.forEach(element => {
+              if (element[1].upvotes > 21) {
+                this.memes.push({
+                  id: element[0],
+                  category: element[1].category,
+                  imageURL: element[1].imageURL,
+                  title: element[1].title,
+                  upvotes: element[1].upvotes,
+                  catSrc: element[1].catSrc,
+                  link: element[1].catLink,
+                  voted: element[1].voted,
+                  comments: element[1].comments
+                });
+              }
+              this.loading = false;
+              this.memes = this.memes.sort((a, b) => {
+                return b.upvotes - a.upvotes;
               });
-            this.loading = false;
-            this.memes = this.memes.sort((a, b) => {
-              return b.upvotes - a.upvotes;
             });
-          });
+          } else {
+            this.loading = false;
+            this.memes = [];
+          }
         })
         .catch(err => (this.error = err));
     });
