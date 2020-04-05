@@ -36,10 +36,15 @@
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/auth";
 import axios from "axios";
 import categories from "../categories";
 
 export default {
+  created() {
+    this.creator = firebase.auth().currentUser.email;
+  },
   data() {
     return {
       categories: categories,

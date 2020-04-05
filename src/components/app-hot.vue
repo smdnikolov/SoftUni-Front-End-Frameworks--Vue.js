@@ -79,7 +79,7 @@ export default {
           if (data.data) {
             data = Object.entries(Object.values(data)[0]);
             data.forEach(element => {
-              if (element[1].upvotes > 21) {
+              if (element[1].upvotes > 20) {
                 this.memes.push({
                   id: element[0],
                   category: element[1].category,

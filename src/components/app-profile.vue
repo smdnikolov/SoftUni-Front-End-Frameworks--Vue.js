@@ -2,38 +2,48 @@
   <div>
     <div class="row">
       <img
+        v-if="!clickTrigger"
         class="greeter"
         src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTKFmgrxjUQda1BgI7YSa9ka-RlUZIh2MQpFfTk6i_SsQxJLh8J&usqp=CAU"
         style="width:300px;height:300px;border-radius:10px"
         alt
       />
-      <h2>
+      <h2 v-if="!clickTrigger">
         User email:
         <b>{{user}}</b>
       </h2>
 
-      <div class="col-sm-4 center">
+      <div v-if="!clickTrigger" class="col-sm-4 center">
         <div class="container">
           <h2>Check the memes which you have</h2>
           <div>
             <span>
-              <router-link class="button" to="/created">Created</router-link>
+              <button @click="clickCreated($event)" class="button" to="/created">Created</button>
             </span>
             <span>
-              <router-link class="button" to="/commented">Commented</router-link>
+              <button @click="clickCommented($event)" class="button" to="/commented">Commented</button>
             </span>
           </div>
         </div>
+      </div>
+      <div v-if="btnCrtClicked" class="col-sm-4 center">
+        <app-created />
+      </div>
+      <div v-if="btnCmtClicked" class="col-sm-4 center">
+        <app-commented />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import appCreated from "../components/app-profile-created";
+import appCommented from "../components/app-profile-commented";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
 export default {
+  components: { appCreated, appCommented },
   created() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -42,15 +52,28 @@ export default {
       }
     });
   },
-  name: "appHome",
   props: {},
   data() {
     return {
       loggedIn: false,
-      user: "test"
+      user: "test",
+      btnCrtClicked: false,
+      btnCmtClicked: false,
+      clickTrigger: false
     };
   },
-  methods: {}
+  methods: {
+    clickCreated(e) {
+      console.log(e.target);
+      this.btnCrtClicked = true;
+      this.clickTrigger = true;
+    },
+    clickCommented(e) {
+      this.btnCmtClicked = true;
+      this.clickTrigger = true;
+      console.log(e.target);
+    }
+  }
 };
 </script>
 
@@ -66,29 +89,6 @@ div {
   text-align: center;
   display: inline;
 }
-.button-large {
-  text-align: center;
-  vertical-align: middle;
-  display: inline-block;
-  width: 115px;
-  background: black;
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
-  color: #f5860a;
-  font-weight: bold;
-}
-.button-large:hover {
-  text-decoration: none;
-  opacity: 0.7;
-}
-.button-large:focus {
-  text-decoration: none;
-  border: 1px #f5860a;
-  color: #f5860a;
-  outline: none;
-  opacity: 0.7;
-}
 .button {
   text-align: center;
   vertical-align: middle;
@@ -102,13 +102,7 @@ div {
   font-weight: bold;
   border: none;
 }
-.button:focus {
-  text-decoration: none;
-  border: 1px #f5860a;
-  color: #f5860a;
-  outline: none;
-  opacity: 0.7;
-}
+
 .button:hover {
   text-decoration: none;
   opacity: 0.7;
