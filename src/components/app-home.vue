@@ -56,19 +56,11 @@
 
 <script>
 import * as firebase from "firebase/app";
-import "firebase/auth";
-
+import "@firebase/auth";
 export default {
-  beforeCreate() {
-    console.log(1);
-    firebase
-      .auth()
-      .onAuthStateChanged(data => {
-        if (data.email) {
-          this.loggedIn = true;
-        }
-      })
-      .catch(err => console.log(err));
+  created() {
+    this.loggedIn = firebase.auth().currentUser;
+    //console.log(this.loggedIn);
   },
   props: {},
   data() {

@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-sm-4 center">
-      <div v-if="error" class="error">{{error.message}}</div>
+      <div v-if="error" class="error">{{this.error}}</div>
       <form @submit.prevent="logIn()">
         <div class="container">
           <h1>Login</h1>
