@@ -4,12 +4,14 @@ import router from './router'
 import axios from 'axios'
 import firebase from 'firebase/app'
 import Vuelidate from 'vuelidate'
+import VueToastr from 'vue-toastr'
 
 
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios;
 Vue.use(Vuelidate)
+Vue.use(VueToastr)
 
 
 const firebaseConfig = {

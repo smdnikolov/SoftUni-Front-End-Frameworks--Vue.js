@@ -2,7 +2,6 @@
   <div class="row">
     <div class="col-sm-4 center">
       <div class="form">
-        <div v-if="error" class="error">{{error.message}}</div>
         <form @submit.prevent="shareMeme()">
           <div class="container">
             <h1 style="text-align:center;color:#f5860a;">Share A Meme</h1>
@@ -11,7 +10,7 @@
               <input
                 type="text"
                 v-model.trim="$v.title.$model"
-                :class="{'is-invalid':$v.title.$error || $v.title.$dirty} "
+                :class="{'is-valid':!$v.title.$anyError && title !=='', 'is-invalid':$v.title.$anyError && title !== '' } "
                 placeholder="Title"
                 name="title"
               />
@@ -27,9 +26,9 @@
                 type="text"
                 v-model="url"
                 placeholder="URL"
-                name="ImageUrl"
+                name="url"
                 v-model.trim="$v.url.$model"
-                :class="{'is-invalid':$v.url.$error}"
+                :class="{'is-valid':!$v.url.$anyError && url !=='','is-invalid':$v.url.$anyError && url !== ''}"
               />
               <div class="invalid-feedback">
                 <span
@@ -79,8 +78,6 @@ export default {
   data() {
     return {
       categories: categories,
-      error: "",
-      loggedIn: false,
       title: "",
       url: "",
       meme: {
@@ -121,8 +118,13 @@ export default {
         .post("https://memes-587f6.firebaseio.com/memes.json", this.meme)
         .then(data => {
           this.$router.push(`/meme/${data.data.name}`);
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.s("Successfully shared a Meme!");
         })
-        .catch(err => (this.error = err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     }
   }
 };
@@ -142,6 +144,15 @@ html input[disabled] {
     rgba(245, 108, 108, 0.15)
   );
 }
+.is-valid {
+  color: rgb(62, 143, 62) !important;
+  outline-color: rgb(62, 143, 62) !important;
+  border-color: rgb(62, 143, 62) !important;
+  background: radial-gradient(
+    rgba(22, 201, 30, 0.1),
+    rgba(108, 245, 108, 0.15)
+  );
+}
 .invalid-feedback {
   text-align: left;
   color: red;
@@ -157,9 +168,6 @@ input:focus {
   outline-color: #f5860a;
 }
 
-.error {
-  color: red;
-}
 .container {
   width: 100%;
   color: #f5860a;

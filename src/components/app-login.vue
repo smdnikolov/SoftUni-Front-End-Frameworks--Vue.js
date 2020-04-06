@@ -1,7 +1,6 @@
 <template>
   <div class="row">
     <div class="col-sm-4 center">
-      <div v-if="error" class="error">{{this.error}}</div>
       <form @submit.prevent="logIn()">
         <div class="container">
           <h1>Login</h1>
@@ -11,7 +10,7 @@
               v-model="email"
               placeholder="email"
               v-model.trim="$v.email.$model"
-              :class="{'is-invalid':$v.email.$error || $v.email.$dirty}"
+              :class="{'is-invalid':$v.email.$anyError && email !== '' , 'is-valid':!$v.email.$anyError && email !==''}"
             />
             <div class="invalid-feedback">
               <span v-if="!$v.email.email && this.email !==''">The email should be in valid format.</span>
@@ -23,7 +22,7 @@
               v-model="password"
               placeholder="password"
               v-model.trim="$v.password.$model"
-              :class="{'is-invalid':$v.password.$error || $v.password.$dirty}"
+              :class="{'is-invalid':$v.password.$anyError && password !=='' , 'is-valid':!$v.password.$anyError && password !==''}"
             />
             <div class="invalid-feedback">
               <span
@@ -63,8 +62,7 @@ export default {
   data() {
     return {
       email: "",
-      password: "",
-      error: ""
+      password: ""
     };
   },
   validations: {
@@ -86,9 +84,12 @@ export default {
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
           this.$router.push("/");
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.s("Successfully logged in!");
         })
         .catch(err => {
-          this.error = err.message;
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
         });
     }
   }
@@ -99,6 +100,7 @@ export default {
 button[disabled],
 html input[disabled] {
   cursor: not-allowed;
+  opacity: 0.7;
 }
 .is-invalid {
   color: red !important;
@@ -107,6 +109,15 @@ html input[disabled] {
   background: radial-gradient(
     rgba(201, 22, 22, 0.1),
     rgba(245, 108, 108, 0.15)
+  );
+}
+.is-valid {
+  color: rgb(62, 143, 62) !important;
+  outline-color: rgb(62, 143, 62) !important;
+  border-color: rgb(62, 143, 62) !important;
+  background: radial-gradient(
+    rgba(22, 201, 30, 0.1),
+    rgba(108, 245, 108, 0.15)
   );
 }
 .invalid-feedback {
@@ -118,10 +129,6 @@ html input[disabled] {
   color: gray;
   margin-top: 20px;
 }
-.error {
-  color: red;
-}
-
 .container {
   width: 100%;
   color: #f5860a;

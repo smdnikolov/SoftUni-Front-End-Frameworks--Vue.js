@@ -1,7 +1,6 @@
 <template>
   <div class="row">
     <div class="col-sm-4 center">
-      <div v-if="error" class="error">{{error.message}}</div>
       <form @submit.prevent="register()">
         <div class="container">
           <h1>Register</h1>
@@ -11,7 +10,7 @@
               v-model="email"
               placeholder="email"
               v-model.trim="$v.email.$model"
-              :class="{'is-invalid':$v.email.$error || $v.email.$dirty }"
+              :class=" {'is-invalid':$v.email.$anyError , 'is-valid':!$v.email.$anyError && email !==''}"
             />
             <div class="invalid-feedback">
               <span v-if="!$v.email.email && this.email !==''">The email should be in valid format.</span>
@@ -23,7 +22,7 @@
               v-model="password"
               placeholder="password"
               v-model.trim="$v.password.$model"
-              :class="{'is-invalid':$v.password.$error || $v.password.$dirty}"
+              :class="{'is-invalid':$v.password.$anyError && password !=='' , 'is-valid':!$v.password.$anyError && password !==''}"
             />
             <div class="invalid-feedback">
               <span
@@ -37,7 +36,7 @@
               v-model="rePassword"
               placeholder="repeat password"
               v-model.trim="$v.rePassword.$model"
-              :class="{'is-invalid':$v.rePassword.$error || $v.rePassword.$dirty}"
+              :class="{'is-invalid':$v.rePassword.$anyError && rePassword !=='', 'is-valid':!$v.rePassword.$anyError&& rePassword !==''}"
             />
             <div class="invalid-feedback">
               <span
@@ -54,7 +53,7 @@
         </div>
         <div style="color:#f5860a">
           Already have an account ?
-          <div style="color:#f5860a;padding:10px">
+          <div style="color:#f5860a;margin-top:10px">
             <router-link class="button" to="/login">Login</router-link>
           </div>
         </div>
@@ -79,9 +78,7 @@ export default {
     return {
       email: "",
       password: "",
-      rePassword: "",
-      error: "",
-      loggedIn: false
+      rePassword: ""
     };
   },
   validations: {
@@ -106,14 +103,19 @@ export default {
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(() => {
           this.$router.replace({ name: "appHome" });
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.s("Successfully registered and logged in!");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
 button[disabled],
 html input[disabled] {
   cursor: not-allowed;
@@ -127,6 +129,15 @@ html input[disabled] {
     rgba(245, 108, 108, 0.15)
   );
 }
+.is-valid {
+  color: rgb(62, 143, 62) !important;
+  outline-color: rgb(62, 143, 62) !important;
+  border-color: rgb(62, 143, 62) !important;
+  background: radial-gradient(
+    rgba(22, 201, 30, 0.1),
+    rgba(108, 245, 108, 0.15)
+  );
+}
 .invalid-feedback {
   text-align: left;
   color: red;
@@ -136,12 +147,7 @@ html input[disabled] {
   color: gray;
   margin-top: 20px;
 }
-.error {
-  color: red;
-}
-.error {
-  color: red;
-}
+
 input:focus {
   color: #f5860a;
   outline-color: #f5860a;
