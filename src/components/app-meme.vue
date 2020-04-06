@@ -174,9 +174,15 @@ export default {
             this.loadingComments = false;
             this.meme.comments = comments;
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            this.$toastr.defaultPosition = "toast-top-center";
+            this.$toastr.e(err.message);
+          });
       } else {
-        alert("You cannot post a blank comment. Please write something.");
+        this.$toastr.defaultPosition = "toast-top-center";
+        this.$toastr.e(
+          "You cannot post a blank comment. Please write something"
+        );
       }
       this.comment = "";
     },
@@ -195,7 +201,10 @@ export default {
           this.loadingComments = false;
           this.meme.comments = comments;
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     },
     upvote(e) {
       let id = this.$router.currentRoute.params.id;
@@ -216,7 +225,10 @@ export default {
           e.target.parentNode.children[1].disabled = true;
           e.target.parentNode.children[1].classList.add("voted");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     },
     downvote(e) {
       let id = this.$router.currentRoute.params.id;
@@ -237,7 +249,10 @@ export default {
           e.target.parentNode.children[1].disabled = true;
           e.target.parentNode.children[1].classList.add("voted");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     }
   }
 };

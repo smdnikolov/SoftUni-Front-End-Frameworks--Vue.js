@@ -103,7 +103,10 @@ export default {
             this.memes = [];
           }
         })
-        .catch(err => (this.error = err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     });
   },
 
@@ -141,14 +144,20 @@ export default {
                 voted
               })
             )
-            .catch(err => console.log(err));
+            .catch(err => {
+              this.$toastr.defaultPosition = "toast-top-center";
+              this.$toastr.e(err.message);
+            });
           memes[index].upvotes++;
           e.target.parentNode.children[0].disabled = true;
           e.target.parentNode.children[0].classList.add("voted");
           e.target.parentNode.children[1].disabled = true;
           e.target.parentNode.children[1].classList.add("voted");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     },
 
     downvote(id, memes, index, e) {
@@ -165,14 +174,20 @@ export default {
                 upvotes
               })
             )
-            .catch(err => console.log(err));
+            .catch(err => {
+              this.$toastr.defaultPosition = "toast-top-center";
+              this.$toastr.e(err.message);
+            });
           memes[index].upvotes--;
           e.target.parentNode.children[0].disabled = true;
           e.target.parentNode.children[0].classList.add("voted");
           e.target.parentNode.children[1].disabled = true;
           e.target.parentNode.children[1].classList.add("voted");
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     },
     goToComments(id) {
       this.$router.push(`meme/${id}#comments`);

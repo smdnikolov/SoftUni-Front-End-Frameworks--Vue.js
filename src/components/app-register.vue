@@ -107,6 +107,7 @@ export default {
           this.$toastr.s("Successfully registered and logged in!");
         })
         .catch(err => {
+          (this.email = ""), (this.password = ""), (this.rePassword = "");
           this.$toastr.defaultPosition = "toast-top-center";
           this.$toastr.e(err.message);
         });

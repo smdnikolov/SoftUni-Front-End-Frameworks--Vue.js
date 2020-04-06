@@ -84,7 +84,10 @@ export default {
           this.memes = [];
         }
       })
-      .catch(err => (this.error = err));
+      .catch(err => {
+        this.$toastr.defaultPosition = "toast-top-center";
+        this.$toastr.e(err.message);
+      });
   },
 
   props: {},

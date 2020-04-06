@@ -88,7 +88,9 @@ export default {
           this.$toastr.s("Successfully logged in!");
         })
         .catch(err => {
-          this.$toastr.defaultPosition = "toast-top-center";
+          (this.email = ""),
+            (this.password = ""),
+            (this.$toastr.defaultPosition = "toast-top-center");
           this.$toastr.e(err.message);
         });
     }

@@ -122,7 +122,9 @@ export default {
           this.$toastr.s("Successfully shared a Meme!");
         })
         .catch(err => {
-          this.$toastr.defaultPosition = "toast-top-center";
+          (this.title = ""),
+            (this.url = ""),
+            (this.$toastr.defaultPosition = "toast-top-center");
           this.$toastr.e(err.message);
         });
     }
