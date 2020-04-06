@@ -200,6 +200,9 @@ export default {
         .then(() => {
           this.loadingComments = false;
           this.meme.comments = comments;
+
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.s("Comment deleted");
         })
         .catch(err => {
           this.$toastr.defaultPosition = "toast-top-center";
