@@ -41,6 +41,9 @@ export default {
 body {
   font-family: "Oxanium", cursive;
 }
+.toast-container {
+  margin-top: 90px;
+}
 .left {
   float: left;
   position: fixed;

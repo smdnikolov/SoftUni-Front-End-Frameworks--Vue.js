@@ -155,7 +155,6 @@ export default {
       this.comment = "";
     },
     postComment(event) {
-      document.getElementById("comments").scrollIntoView();
       event.preventDefault();
       if (this.comment !== "") {
         this.loadingComments = true;
@@ -173,6 +172,9 @@ export default {
           .then(() => {
             this.loadingComments = false;
             this.meme.comments = comments;
+            this.$toastr.defaultPosition = "toast-top-center";
+            this.$toastr.i("Comment added.");
+            document.getElementById("comments").children[0].scrollIntoView();
           })
           .catch(err => {
             this.$toastr.defaultPosition = "toast-top-center";
@@ -202,7 +204,7 @@ export default {
           this.meme.comments = comments;
 
           this.$toastr.defaultPosition = "toast-top-center";
-          this.$toastr.s("Comment deleted");
+          this.$toastr.i("Comment deleted.");
         })
         .catch(err => {
           this.$toastr.defaultPosition = "toast-top-center";
