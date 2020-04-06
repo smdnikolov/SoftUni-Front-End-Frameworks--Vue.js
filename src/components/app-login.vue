@@ -11,7 +11,7 @@
               v-model="email"
               placeholder="email"
               v-model.trim="$v.email.$model"
-              :class="{'is-invalid':$v.email.$error}"
+              :class="{'is-invalid':$v.email.$error || $v.email.$dirty}"
             />
             <div class="invalid-feedback">
               <span v-if="!$v.email.email && this.email !==''">The email should be in valid format.</span>
@@ -23,7 +23,7 @@
               v-model="password"
               placeholder="password"
               v-model.trim="$v.password.$model"
-              :class="{'is-invalid':$v.password.$error}"
+              :class="{'is-invalid':$v.password.$error || $v.password.$dirty}"
             />
             <div class="invalid-feedback">
               <span
@@ -57,7 +57,7 @@
 <script>
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import { required, email } from "vuelidate/lib/validators";
+import { email } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -69,11 +69,9 @@ export default {
   },
   validations: {
     email: {
-      required,
       email
     },
     password: {
-      required,
       password(password) {
         return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/.test(
           password

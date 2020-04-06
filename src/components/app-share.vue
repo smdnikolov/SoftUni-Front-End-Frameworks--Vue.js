@@ -9,10 +9,9 @@
             <div>
               <label for="title">Meme Title</label>
               <input
-                @input="$v.title.$touch()"
                 type="text"
                 v-model.trim="$v.title.$model"
-                :class="{'is-invalid':$v.title.$error}"
+                :class="{'is-invalid':$v.title.$error || $v.title.$dirty} "
                 placeholder="Title"
                 name="title"
               />
@@ -26,7 +25,6 @@
               <label for="imageUrl">Meme URL</label>
               <input
                 type="text"
-                @input="$v.url.$touch()"
                 v-model="url"
                 placeholder="URL"
                 name="ImageUrl"
@@ -53,14 +51,14 @@
               </select>
             </div>
             <button
-              :disabled="$v.title.$error || $v.url.$error || (this.url === '' && this.title ==='')"
+              :disabled="$v.title.$error || $v.url.$error || (this.url === '' || this.title ==='')"
               class="share"
               type="submit"
             >Share</button>
             <div class="invalid">
               <span
                 style="margin-top:10px"
-                v-if="$v.title.$error || $v.url.$error || (this.url === '' && this.title ==='')"
+                v-if="$v.title.$error || $v.url.$error || (this.url === '' || this.title ==='')"
               >Please fill the form correclty.</span>
             </div>
           </div>
@@ -75,7 +73,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import axios from "axios";
 import categories from "../categories";
-import { required, minLength } from "vuelidate/lib/validators";
+import { minLength } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -100,11 +98,9 @@ export default {
   },
   validations: {
     title: {
-      required,
       minLength: minLength(6)
     },
     url: {
-      required,
       url(url) {
         return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|webp)/.test(url);
       }
