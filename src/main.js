@@ -3,10 +3,13 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import firebase from 'firebase/app'
+import Vuelidate from 'vuelidate'
+
 
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios;
+Vue.use(Vuelidate)
 
 
 const firebaseConfig = {

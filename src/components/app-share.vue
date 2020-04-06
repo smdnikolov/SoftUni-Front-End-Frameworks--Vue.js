@@ -8,16 +8,41 @@
             <h1 style="text-align:center;color:#f5860a;">Share A Meme</h1>
             <div>
               <label for="title">Meme Title</label>
-              <input type="text" v-model="meme.title" placeholder="Title" name="title" />
+              <input
+                @input="$v.title.$touch()"
+                type="text"
+                v-model.trim="$v.title.$model"
+                :class="{'is-invalid':$v.title.$error}"
+                placeholder="Title"
+                name="title"
+              />
+              <div class="invalid-feedback">
+                <span
+                  v-if="!$v.title.minLength"
+                >The meme title must have at least {{$v.title.$params.minLength.min}} characters.</span>
+              </div>
             </div>
             <div>
               <label for="imageUrl">Meme URL</label>
-              <input type="text" v-model="meme.imageURL" placeholder="URL" name="ImageUrl" />
+              <input
+                type="text"
+                @input="$v.url.$touch()"
+                v-model="url"
+                placeholder="URL"
+                name="ImageUrl"
+                v-model.trim="$v.url.$model"
+                :class="{'is-invalid':$v.url.$error}"
+              />
+              <div class="invalid-feedback">
+                <span
+                  v-if="!$v.url.url && this.url !==''"
+                >The meme url should start with https:// and be in a valid image format.</span>
+              </div>
             </div>
             <div>
               <label for="category">Select Category</label>
               <select id="category" name="category" v-model="meme.category">
-                <option value="Animals">Animals</option>
+                <option selected value="Animals">Animals</option>
                 <option value="Anime">Anime</option>
                 <option value="Awesome">Awesome</option>
                 <option value="Coronavirus">Coronavirus</option>
@@ -27,7 +52,17 @@
                 <option value="WTF">WTF</option>
               </select>
             </div>
-            <button class="share" type="submit">Share</button>
+            <button
+              :disabled="$v.title.$error || $v.url.$error || (this.url === '' && this.title ==='')"
+              class="share"
+              type="submit"
+            >Share</button>
+            <div class="invalid">
+              <span
+                style="margin-top:10px"
+                v-if="$v.title.$error || $v.url.$error || (this.url === '' && this.title ==='')"
+              >Please fill the form correclty.</span>
+            </div>
           </div>
         </form>
       </div>
@@ -40,6 +75,7 @@ import * as firebase from "firebase/app";
 import "firebase/auth";
 import axios from "axios";
 import categories from "../categories";
+import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -47,10 +83,12 @@ export default {
       categories: categories,
       error: "",
       loggedIn: false,
+      title: "",
+      url: "",
       meme: {
         title: "",
         imageURL: "",
-        category: "",
+        category: "Animals",
         upvotes: 0,
         catSrc: "",
         catLink: "",
@@ -60,15 +98,29 @@ export default {
       }
     };
   },
+  validations: {
+    title: {
+      required,
+      minLength: minLength(6)
+    },
+    url: {
+      required,
+      url(url) {
+        return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|webp)/.test(url);
+      }
+    }
+  },
   methods: {
     shareMeme() {
       let currentCat = this.categories.filter(
         x => x.name === this.meme.category
       );
+      this.meme.title = this.title;
+      this.meme.imageURL = this.url;
       this.meme.catSrc = currentCat[0].src;
       this.meme.catLink = currentCat[0].link;
       this.meme.creator = firebase.auth().currentUser.email;
-      console.log(this.meme.creator);
+
       axios
         .post("https://memes-587f6.firebaseio.com/memes.json", this.meme)
         .then(data => {
@@ -81,6 +133,29 @@ export default {
 </script>
 
 <style>
+button[disabled],
+html input[disabled] {
+  cursor: not-allowed;
+}
+.is-invalid {
+  color: red !important;
+  outline-color: red !important;
+  border-color: red !important;
+  background: radial-gradient(
+    rgba(201, 22, 22, 0.1),
+    rgba(245, 108, 108, 0.15)
+  );
+}
+.invalid-feedback {
+  text-align: left;
+  color: red;
+}
+.invalid {
+  text-align: center;
+  color: gray;
+  margin-top: 20px;
+}
+
 input:focus {
   color: #f5860a;
   outline-color: #f5860a;
