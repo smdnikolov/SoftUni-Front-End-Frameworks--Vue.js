@@ -90,7 +90,7 @@
               </div>
             </div>
             <div v-else>
-              <h3>There are no comments yet for the meme</h3>
+              <h3 style="color: #f5860a">There are no comments yet for the meme</h3>
             </div>
           </div>
         </div>
