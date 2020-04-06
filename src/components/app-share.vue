@@ -42,14 +42,9 @@ import axios from "axios";
 import categories from "../categories";
 
 export default {
-  created() {
-    this.creator = firebase.auth().currentUser.email;
-  },
   data() {
     return {
       categories: categories,
-      user: "",
-      userMail: "",
       error: "",
       loggedIn: false,
       meme: {
@@ -72,7 +67,8 @@ export default {
       );
       this.meme.catSrc = currentCat[0].src;
       this.meme.catLink = currentCat[0].link;
-      this.meme.creator = this.userMail;
+      this.meme.creator = firebase.auth().currentUser.email;
+      console.log(this.meme.creator);
       axios
         .post("https://memes-587f6.firebaseio.com/memes.json", this.meme)
         .then(data => {

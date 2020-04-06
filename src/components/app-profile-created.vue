@@ -55,14 +55,13 @@ import "firebase/auth";
 import axios from "axios";
 export default {
   beforeCreate() {
-    this.userMail = firebase.auth().currentUser.email;
     axios
       .get("https://memes-587f6.firebaseio.com/memes/.json")
       .then(data => {
         if (data.data) {
           data = Object.entries(Object.values(data)[0]);
           data.forEach(element => {
-            if (element[1].creator === this.userMail) {
+            if (element[1].creator === firebase.auth().currentUser.email) {
               this.memes.push({
                 id: element[0],
                 category: element[1].category,
@@ -92,8 +91,7 @@ export default {
   data() {
     return {
       loading: true,
-      memes: [],
-      userMail: ""
+      memes: []
     };
   },
   methods: {
@@ -198,10 +196,12 @@ a:hover {
   width: 730px;
   border-bottom: 2px solid #ddd;
   display: inline-block;
-  margin-bottom: 35px;
 }
 .row2 {
   margin-top: 15px;
   text-align: left;
+}
+.post {
+  padding-top: 10px;
 }
 </style>

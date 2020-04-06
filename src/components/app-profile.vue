@@ -18,10 +18,10 @@
           <h2>Check the memes which you have</h2>
           <div>
             <span>
-              <button @click="clickCreated($event)" class="button" to="/created">Created</button>
+              <button @click="clickCreated()" class="button" to="/created">Created</button>
             </span>
             <span>
-              <button @click="clickCommented($event)" class="button" to="/commented">Commented</button>
+              <button @click="clickCommented()" class="button" to="/commented">Commented</button>
             </span>
           </div>
         </div>
@@ -63,15 +63,15 @@ export default {
     };
   },
   methods: {
-    clickCreated(e) {
-      console.log(e.target);
+    clickCreated() {
+     
       this.btnCrtClicked = true;
       this.clickTrigger = true;
     },
-    clickCommented(e) {
+    clickCommented() {
       this.btnCmtClicked = true;
       this.clickTrigger = true;
-      console.log(e.target);
+   
     }
   }
 };

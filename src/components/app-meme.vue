@@ -40,7 +40,7 @@
           </span>
 
           <div class="line"></div>
-          <div id="comments" style="text-align:center">
+          <div id="comments" ref="comments" style="text-align:center">
             <div v-if="user">
               <div style="color:#f5860a">
                 User with email:
@@ -115,7 +115,7 @@ export default {
       axios
         .get(`https://memes-587f6.firebaseio.com/memes/${memeId}.json`)
         .then(data => {
-          if(data.data===null){
+          if (data.data === null) {
             this.$router.replace({ name: "appNotFound" });
           }
           data = data.data;
@@ -126,8 +126,12 @@ export default {
         .catch(err => (this.error = err));
     });
   },
-
-  props: {},
+  updated() {
+    if (this.scrollOnLoad) {
+      this.scroll();
+      this.scrollOnLoad = false;
+    }
+  },
   data() {
     return {
       loading: true,
@@ -136,15 +140,22 @@ export default {
       userMail: "",
       voters: [],
       loadingComments: true,
-      comment: ""
+      comment: "",
+      scrollOnLoad: true
     };
   },
   methods: {
+    scroll() {
+      if (this.$router.currentRoute.hash == "#comments") {
+        document.getElementById("comments").scrollIntoView();
+      }
+    },
     clearComment(event) {
       event.preventDefault();
       this.comment = "";
     },
     postComment(event) {
+      document.getElementById("comments").scrollIntoView();
       event.preventDefault();
       if (this.comment !== "") {
         this.loadingComments = true;
