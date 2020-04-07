@@ -5,7 +5,7 @@
       <h2>You have not commented on any memes yet. Browse through the categories, enjoy and comment.</h2>
     </div>
     <div v-else>
-      <h2>Created Memes</h2>
+      <h2>Commented</h2>
     </div>
     <div class="row row2">
       <div v-if="loading" class="col-sm-4 center">
