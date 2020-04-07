@@ -46,7 +46,7 @@
                 User with email:
                 <p style="font-weight:bold">{{userMail}}</p>
               </div>
-              <form>
+              <form class="post">
                 <textarea
                   placeholder="Write a comment..."
                   style="resize:none"
@@ -80,11 +80,30 @@
                     </p>
                     <hr />
                     <p class="text">{{comment[1]}}</p>
+                    <textarea
+                      class="edit-comment"
+                      placeholder="Edit your comment..."
+                      style="resize:none,display:none"
+                      id
+                      cols="65"
+                      rows="5"
+                      v-model="editValue"
+                    ></textarea>
                     <button
                       @click="deleteComment($event,index)"
                       v-if="comment[0]===userMail"
                       class="delBtn"
                     >Delete Comment</button>
+
+                    <button
+                      @click="editComment($event,index)"
+                      v-if="comment[0]===userMail"
+                      class="delBtn"
+                    >Edit Comment</button>
+
+                    <button style="display:none" v-if="comment[0]===userMail" class="delBtn">Back</button>
+
+                    <button style="display:none" v-if="comment[0]===userMail" class="delBtn">Edit</button>
                   </div>
                 </div>
               </div>
@@ -123,7 +142,10 @@ export default {
           this.loading = false;
           this.loadingComments = false;
         })
-        .catch(err => (this.error = err));
+        .catch(err => {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(err.message);
+        });
     });
   },
   updated() {
@@ -132,6 +154,7 @@ export default {
       this.scrollOnLoad = false;
     }
   },
+
   data() {
     return {
       loading: true,
@@ -141,7 +164,8 @@ export default {
       voters: [],
       loadingComments: true,
       comment: "",
-      scrollOnLoad: true
+      scrollOnLoad: true,
+      editValue: ""
     };
   },
   methods: {
@@ -174,7 +198,6 @@ export default {
             this.meme.comments = comments;
             this.$toastr.defaultPosition = "toast-top-center";
             this.$toastr.i("Comment added.");
-            document.getElementById("comments").children[0].scrollIntoView();
           })
           .catch(err => {
             this.$toastr.defaultPosition = "toast-top-center";
@@ -210,6 +233,68 @@ export default {
           this.$toastr.defaultPosition = "toast-top-center";
           this.$toastr.e(err.message);
         });
+      this.comment = "";
+    },
+    editComment(event, index) {
+      event.target.parentNode.children[2].style.display = "none";
+      event.target.parentNode.children[3].style.display = "inline";
+      this.editValue = event.target.parentNode.children[2].textContent;
+      let comments = [...this.meme.comments];
+      let deleteBtn = event.target.parentNode.children[4];
+      let currentEdit = event.target.parentNode.children[5];
+      let backBtn = event.target.parentNode.children[6];
+      let editBtn = event.target.parentNode.children[7];
+
+      deleteBtn.style.display = "none";
+      currentEdit.style.display = "none";
+      backBtn.style.display = "inline-block";
+      editBtn.style.display = "inline-block";
+
+      backBtn.addEventListener("click", () => {
+        deleteBtn.style.display = "inline-block";
+        currentEdit.style.display = "inline-block";
+        backBtn.style.display = "none";
+        editBtn.style.display = "none";
+        (this.editValue = ""),
+          (event.target.parentNode.children[2].style.display = "block");
+        event.target.parentNode.children[3].style.display = "none";
+      });
+      editBtn.addEventListener("click", () => {
+        this.loadingComments = true;
+        if (this.editValue !== "") {
+          let i = index;
+          let id = this.$router.currentRoute.params.id;
+          let comment = [this.userMail, this.editValue];
+          comments.splice(i, 1, comment);
+          axios
+            .patch(
+              `https://memes-587f6.firebaseio.com/memes/${id}.json`,
+              (id = { comments })
+            )
+            .then(() => {
+              this.loadingComments = false;
+              this.meme.comments = comments;
+              deleteBtn.style.display = "inline-block";
+              currentEdit.style.display = "inline-block";
+              backBtn.style.display = "none";
+              editBtn.style.display = "none";
+              (this.editValue = ""),
+                (event.target.parentNode.children[2].style.display = "block");
+              event.target.parentNode.children[3].style.display = "none";
+              this.$toastr.defaultPosition = "toast-top-center";
+              this.$toastr.i("Comment edited.");
+            })
+            .catch(err => {
+              this.$toastr.defaultPosition = "toast-top-center";
+              this.$toastr.e(err.message);
+            });
+        } else {
+          this.$toastr.defaultPosition = "toast-top-center";
+          this.$toastr.e(
+            "You cannot edit the comment with empty value. Please write something"
+          );
+        }
+      });
     },
     upvote(e) {
       let id = this.$router.currentRoute.params.id;
@@ -258,12 +343,18 @@ export default {
           this.$toastr.defaultPosition = "toast-top-center";
           this.$toastr.e(err.message);
         });
-    }
+    },
+    editBack() {}
   }
 };
 </script>
 
 <style scoped>
+.edit-comment {
+  resize: none;
+  width: 90%;
+  display: none;
+}
 .text {
   margin-left: 10px;
   text-align: left;
