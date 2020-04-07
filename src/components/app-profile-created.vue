@@ -69,7 +69,7 @@ export default {
                 title: element[1].title,
                 upvotes: element[1].upvotes,
                 catSrc: element[1].catSrc,
-                link: element[1].catLink,
+                link: `/category${element[1].catLink}`,
                 voted: element[1].voted,
                 comments: element[1].comments
               });

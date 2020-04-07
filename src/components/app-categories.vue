@@ -3,7 +3,7 @@
     <h3>Categories</h3>
     <ul style="list-style:none;">
       <li v-for="(category,index) in categories" :key="index">
-        <router-link :to="category.link">
+        <router-link :to="`/category${category.link}`">
           <img :src="category.src" />
           <p>{{category.name}}</p>
         </router-link>

@@ -135,12 +135,14 @@ export default {
         .get(`https://memes-587f6.firebaseio.com/memes/${memeId}.json`)
         .then(data => {
           if (data.data === null) {
-            this.$router.replace({ name: "appNotFound" });
+            this.$router.push("/not-found");
+          } else {
+            data = data.data;
+            this.meme = data;
+            this.meme.catLink = `/category${this.meme.catLink}`;
+            this.loading = false;
+            this.loadingComments = false;
           }
-          data = data.data;
-          this.meme = data;
-          this.loading = false;
-          this.loadingComments = false;
         })
         .catch(err => {
           this.$toastr.defaultPosition = "toast-top-center";

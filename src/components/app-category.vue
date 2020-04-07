@@ -69,6 +69,27 @@ import "firebase/auth";
 
 export default {
   beforeCreate() {
+    let categoryCheck = [
+      "Animals",
+      "Anime",
+      "Awesome",
+      "Funny",
+      "Gaming",
+      "Coronavirus",
+      "NSFW",
+      "WTF"
+    ];
+    let categoryName = this.$router.currentRoute.params.id;
+
+    if (categoryName !== "wtf" && categoryName !== "nsfw") {
+      categoryName =
+        categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    } else {
+      categoryName = categoryName.toUpperCase();
+    }
+    if (!categoryCheck.includes(categoryName)) {
+      this.$router.push("/not-found");
+    }
     firebase.auth().onAuthStateChanged(user => {
       this.user = !!user;
       if (this.user) {
@@ -80,7 +101,7 @@ export default {
           if (data.data) {
             data = Object.entries(Object.values(data)[0]);
             data.forEach(element => {
-              if (element[1].category === "Funny") {
+              if (element[1].category === categoryName) {
                 this.memes.push({
                   id: element[0],
                   category: element[1].category,
@@ -88,7 +109,7 @@ export default {
                   title: element[1].title,
                   upvotes: element[1].upvotes,
                   catSrc: element[1].catSrc,
-                  link: element[1].catLink,
+                  link: `/category${element[1].catLink}`,
                   voted: element[1].voted,
                   comments: element[1].comments
                 });
@@ -109,7 +130,15 @@ export default {
         });
     });
   },
-
+  watch: {
+    $route() {
+      (this.loading = true),
+        (this.memes = []),
+        (this.user = ""),
+        (this.userMail = "");
+      this.fetchAndReder();
+    }
+  },
   props: {},
   data() {
     return {
@@ -120,6 +149,69 @@ export default {
     };
   },
   methods: {
+    fetchAndReder: function() {
+      let categoryCheck = [
+        "Animals",
+        "Anime",
+        "Awesome",
+        "Funny",
+        "Gaming",
+        "Coronavirus",
+        "NSFW",
+        "WTF"
+      ];
+      let categoryName = this.$router.currentRoute.params.id;
+
+      if (categoryName !== "wtf" && categoryName !== "nsfw") {
+        categoryName =
+          categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+      } else {
+        categoryName = categoryName.toUpperCase();
+      }
+      if (!categoryCheck.includes(categoryName)) {
+        this.$router.push("/not-found");
+      }
+      firebase.auth().onAuthStateChanged(user => {
+        this.user = !!user;
+        if (this.user) {
+          this.userMail = user.email;
+        }
+        axios
+          .get("https://memes-587f6.firebaseio.com/memes/.json")
+          .then(data => {
+            if (data.data) {
+              data = Object.entries(Object.values(data)[0]);
+              data.forEach(element => {
+                if (element[1].category === categoryName) {
+                  this.memes.push({
+                    id: element[0],
+                    category: element[1].category,
+                    imageURL: element[1].imageURL,
+                    title: element[1].title,
+                    upvotes: element[1].upvotes,
+                    catSrc: element[1].catSrc,
+                    link: `/category${element[1].catLink}`,
+                    voted: element[1].voted,
+                    comments: element[1].comments
+                  });
+                }
+                this.loading = false;
+                this.memes = this.memes.sort((a, b) => {
+                  return b.upvotes - a.upvotes;
+                });
+              });
+            } else {
+              this.loading = false;
+              this.memes = [];
+            }
+          })
+          .catch(err => {
+            this.$toastr.defaultPosition = "toast-top-center";
+            this.$toastr.e(err.message);
+          });
+      });
+    },
+
     upvote(id, memes, index, e) {
       let upvotes;
       let voted = [];
@@ -190,7 +282,7 @@ export default {
         });
     },
     goToComments(id) {
-      this.$router.push(`meme/${id}#comments`);
+      this.$router.push({ path: `/meme/${id}#comments` });
     }
   }
 };
