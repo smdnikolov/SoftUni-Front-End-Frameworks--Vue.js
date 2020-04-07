@@ -44,6 +44,9 @@ body {
 .toast-container {
   margin-top: 90px;
 }
+.toast-progress {
+  display: none;
+}
 .left {
   float: left;
   position: fixed;
