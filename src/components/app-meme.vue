@@ -46,7 +46,7 @@
                 User with email:
                 <p style="font-weight:bold">{{userMail}}</p>
               </div>
-              <form class="post">
+              <form @submit.prevent class="post">
                 <textarea
                   placeholder="Write a comment..."
                   style="resize:none"
