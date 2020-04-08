@@ -5,9 +5,6 @@
       <h2>You have not created any memes yet</h2>
       <router-link class="button txt" :to="'/share'">Share one</router-link>
     </div>
-    <div v-else>
-      <h2>Created Memes</h2>
-    </div>
     <div class="row row2">
       <div v-if="loading" class="col-sm-4 center">
         <h1 style="text-align:center">
