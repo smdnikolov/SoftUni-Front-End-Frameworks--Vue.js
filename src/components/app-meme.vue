@@ -262,8 +262,8 @@ export default {
         event.target.parentNode.children[3].style.display = "none";
       });
       editBtn.addEventListener("click", () => {
-        this.loadingComments = true;
         if (this.editValue !== "") {
+          this.loadingComments = true;
           let i = index;
           let id = this.$router.currentRoute.params.id;
           let comment = [this.userMail, this.editValue];
